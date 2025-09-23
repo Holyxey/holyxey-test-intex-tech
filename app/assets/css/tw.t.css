@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+@theme {
+  --ease-cubic: cubic-bezier(-0.4, 1.2, 1, 1);
+}
+
+html {
+  @apply bg-stone-100 text-stone-900;
+}

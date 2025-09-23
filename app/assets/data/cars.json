@@ -1,0 +1,17 @@
+[
+  { "id": 1, "make": "Toyota", "model": "Camry", "year": 2020 },
+  { "id": 2, "make": "BMW", "model": "X5", "year": 20119 },
+  { "id": 3, "make": "Mercedes-Benz", "model": "C-Class", "year": 2021 },
+  { "id": 4, "make": "Honda", "model": "Civic", "year": 2018 },
+  { "id": 5, "make": "Ford", "model": "Focus", "year": 2017 },
+  { "id": 6, "make": "Audi", "model": "A4", "year": 2022 },
+  { "id": 7, "make": "Hyundai", "model": "Tucson", "year": 2021 },
+  { "id": 8, "make": "Kia", "model": "Sportage", "year": 2020 },
+  { "id": 9, "make": "Chevrolet", "model": "Malibu", "year": 2019 },
+  { "id": 10, "make": "Volkswagen", "model": "Passat", "year": 2018 },
+  { "id": 11, "make": "Volvo", "model": "XC60", "year": 2022 },
+  { "id": 12, "make": "Mazda", "model": "CX-5", "year": 2020 },
+  { "id": 13, "make": "Subaru", "model": "Forester", "year": 2021 },
+  { "id": 14, "make": "Nissan", "model": "Altima", "year": 2019 },
+  { "id": 15, "make": "Lexus", "model": "RX 350", "year": 2022 }
+]
