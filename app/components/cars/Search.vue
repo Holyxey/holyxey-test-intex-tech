@@ -7,13 +7,14 @@
     placeholder: string
   }>()
 
-  const searchValue = useSearchStore()
+  const searchStore = useSearchStore()
 
   const id = `search-${Math.random().toString(16).slice(2)}`
   const inputModel = defineModel<string>('input', {
+    get: () => searchStore.value || '',
     set: (val) => {
-      searchValue.value = val.toLowerCase()
-      return searchValue.value
+      searchStore.value = val.toLowerCase()
+      return searchStore.value
     },
   })
 

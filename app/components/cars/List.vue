@@ -4,16 +4,16 @@
   const carsStore = useCarsStore()
   const list = computed(() => carsStore.getAll())
 
-  const searchValue = useSearchStore()
+  const searchStore = useSearchStore()
 
   const isFoundedList = computed<CarInfo[]>(() => {
-    if (!searchValue.value) return list.value
+    if (!searchStore.value) return list.value
     return list.value.filter((car) => {
       const searchableCar = { ...car }
       delete searchableCar.photo
       delete searchableCar.trims
       return Object.values(searchableCar).some((v) =>
-        new RegExp(searchValue.value!, 'ig').test(v.toString()),
+        new RegExp(searchStore.value!, 'ig').test(v.toString()),
       )
     })
   })
@@ -29,7 +29,7 @@
     >
       <CarsPreview
         v-for="(car, key) in list"
-        v-show="isFoundedList.find((f) => f.id === car.id) || !searchValue"
+        v-show="isFoundedList.find((f) => f.id === car.id) || !searchStore"
         :key
         :car
       />

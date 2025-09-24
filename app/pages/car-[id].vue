@@ -1,6 +1,8 @@
 <script setup lang="ts">
-  definePageMeta({
-    layout: 'card',
+  const searchStore = useSearchStore()
+  onMounted(() => {
+    searchStore.setKey('card')
+    searchStore.updateFromQuery()
   })
 </script>
 
