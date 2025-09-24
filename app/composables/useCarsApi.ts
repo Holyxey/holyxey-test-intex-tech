@@ -1,8 +1,8 @@
 import type { CarInfo } from '~~/types'
 
 const useCarsApi = {
-  async getPhoto(car: CarInfo) {
-    if (import.meta.server) return
+  async getPhoto(car: CarInfo): Promise<string | undefined> {
+    if (import.meta.server) return undefined
     const carsStore = useCarsStore()
 
     const storedCar = carsStore.get(car.id)
@@ -10,7 +10,7 @@ const useCarsApi = {
       return storedCar.photo
     }
 
-    const foundPhoto = await $fetch('/api/getCarImg', {
+    const foundPhoto = await $fetch<string | undefined>('/api/getCarImg', {
       method: 'POST',
       body: { car },
     })
@@ -19,8 +19,8 @@ const useCarsApi = {
     else carsStore.savePhoto(car.id, '')
     return foundPhoto
   },
-  async getTrims(car: CarInfo) {
-    if (import.meta.server) return
+  async getTrims(car: CarInfo): Promise<CarInfo['trims'] | undefined> {
+    if (import.meta.server) return undefined
     const carsStore = useCarsStore()
 
     const storedCar = carsStore.get(car.id)
@@ -28,15 +28,20 @@ const useCarsApi = {
       return storedCar.trims
     }
 
-    const foundMoreInfo = await $fetch('/api/getCarMoreInfo', {
-      method: 'POST',
-      body: { car },
-    })
+    const foundMoreInfo = await $fetch<CarInfo['trims'] | string | undefined>(
+      '/api/getCarMoreInfo',
+      {
+        method: 'POST',
+        body: { car },
+      },
+    )
 
-    if (foundMoreInfo && typeof foundMoreInfo !== 'string')
+    if (foundMoreInfo && typeof foundMoreInfo !== 'string') {
       carsStore.saveMoreInfo(car.id, foundMoreInfo)
-    else carsStore.saveMoreInfo(car.id, undefined)
-    return foundMoreInfo
+      return foundMoreInfo
+    }
+    carsStore.saveMoreInfo(car.id, undefined)
+    return undefined
   },
 }
 

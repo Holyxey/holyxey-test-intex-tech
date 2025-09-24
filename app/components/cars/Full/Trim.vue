@@ -1,6 +1,7 @@
 <script setup lang="ts">
+  import type { CarInfo } from '@@/types'
   defineProps<{
-    trim: Record<string, string> // CarInfo['trim'][number] - тут не уверен как типизировать корректно
+    trim: NonNullable<CarInfo['trims']>[number]
   }>()
 </script>
 

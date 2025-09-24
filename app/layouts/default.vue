@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { Icon } from '@iconify/vue'
+  import { Icons } from '@/constants/icons'
   const hasBack = ref<string>(useRouter().options.history.state.back?.toString() || '')
   const isHomePage = ref<boolean>(useRoute().path === '/')
 
@@ -37,11 +38,7 @@
         ]"
         @click="goBack"
       >
-        <Icon
-          class="m-auto"
-          width="20"
-          :icon="hasBack ? 'solar:backspace-line-duotone' : 'solar:home-smile-angle-line-duotone'"
-        />
+        <Icon class="m-auto" width="20" :icon="hasBack ? Icons.Back : Icons.Home" />
       </button>
 
       <CarsSearch class="flex-1" type="text" placeholder="Поиск и фильтр" />

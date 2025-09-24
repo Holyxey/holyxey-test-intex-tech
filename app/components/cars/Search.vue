@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { InputHTMLAttributes } from 'vue'
   import { Icon } from '@iconify/vue'
+  import { Icons } from '@/constants/icons'
 
   defineProps<{
     type: InputHTMLAttributes['type']
@@ -89,7 +90,7 @@
           'absolute top-1/2 -translate-y-1/2',
           !isAnyFilters ? 'left-2' : '-left-4',
         ]"
-        icon="hugeicons:command"
+        :icon="Icons.Command"
       />
       <Icon
         width="16"
@@ -98,7 +99,7 @@
           'absolute top-1/2 -translate-y-1/2',
           !isAnyFilters ? 'right-2' : '-right-4',
         ]"
-        icon="tabler:circle-letter-f-filled"
+        :icon="Icons.LetterF"
       />
 
       <!-- Trash -->
@@ -109,7 +110,7 @@
           'absolute top-1/2 -translate-1/2',
           isAnyFilters ? 'left-1/2' : '-left-1/2',
         ]"
-        icon="solar:trash-bin-trash-line-duotone"
+        :icon="Icons.Trash"
       />
     </div>
 

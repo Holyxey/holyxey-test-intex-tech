@@ -1,144 +1,105 @@
 # Мини‑каталог автомобилей
 
-Небольшое Nuxt 4 приложение для просмотра списка автомобилей с локальными данными и догрузкой расширенной информации и изображений с внешних API.
+`Тестовое задание` - Алексей Юрин
 
-— Стек: Nuxt 4 (Vue 3, Vite), Pinia (persist), TypeScript, Tailwind CSS 4, ESLint + Prettier, Iconify.
+## Описание проделанной работы
 
-## Что реализовано
+- Локальный JSON с 16 авто в [app/assets/data/cars.json](app/assets/data/cars.json)
+  (_один специально с ошибкой_).
+- Список автомобилей и карточка ТС:
+  - Страница списка: `app/components/cars/List.vue`
+    \+ рендер превью `app/components/cars/Preview.vue`.
+  - Страница карточки: `app/components/cars/Full/Card.vue`
+    (_+ секции `Full/Line.vue`, `Full/Section.vue`, `Full/Trim.vue`_).
+- Локальный поиск по **make** и **model** (**+ по году**): поисковая строка `app/components/cars/Search.vue`, логика фильтрации в `List.vue`.
+- Фильтры и быстрые подсказки: `app/stores/searchStore.ts` + `app/components/SearchSuggestions.vue`.
+- Внешний API CarQuery для расширенной информации о ТС: серверный маршрут `server/api/getCarMoreInfo.post.ts`.
+- Дополнительное API для изображений (сердито, но бесплатно): Wikimedia API в `server/api/getCarImg.post.ts`. (_без токена 100 запросов в минуту если не ошибаюсь_)
+- Динамическая загрузка расширенных данных при открытии карточки (`useAsyncData` в `Full/Card.vue`).
+- Состояния загрузки и ошибок: визуальные статусы в `Full/Card.vue` (pending / нет данных).
+- Переходы между страницами: Nuxt маршруты `pages/index.vue`, `pages/car-[id].vue`.
+- Pinia для хранения данных: `app/stores/carsStore.ts`, `app/stores/searchStore.ts`; включено persistent‑хранилище через `pinia-plugin-persistedstate` (sessionStorage), настройка в `nuxt.config.ts`.
+- SSR + SPA и отдельные сборки: скрипты `build:ssr` и `build:spa` в `package.json`.
+- TypeScript: типы авто `types/index.d.ts`, типизация стора, компонентов и API.
+- Линтеры/форматтеры: ESLint + Prettier, Tailwind плагин Prettier.
 
-- Локальные данные о 15 авто в `app/assets/data/cars.json` (id, make, model, year).
-  > _Специально сделана ошибка у X5 для демонстрации_
-- Страница списка с предпросмотром карточек и локальным поиском по make/model/year.
-- Страница карточки авто с догрузкой:
-  - характеристик через CarQuery API (`getTrims`),
-  - изображения через Wikimedia Commons API.
-- Состояния загрузки и отсутствия данных в карточке.
-- Кеширование фото и доп.информации в Pinia c persistent‑хранилищем (sessionStorage) — повторные запросы не выполняются.
-- SSR и SPA сборки отдельными скриптами: `build:ssr` и `build:spa` (управляется переменной `NUXT_SSR`).
-- Локальный серверный API (Nuxt server routes) для проксирования внешних запросов и добавления заголовков/корс:
-  - `POST /api/getCarMoreInfo` — данные из CarQuery,
-  - `POST /api/getCarImg` — поиск фото в Wikimedia.
-- Типизация через `types/` (`CarInfo`).
-- Линтер и форматирование: `@nuxt/eslint`, Prettier + плагин для Tailwind.
+## Дополнительно
 
-## Что не реализовано / известно
+1. Создал енам с иконками `app/constants/icons.ts`
+2. Горячая клавиша для фокуса поиска: Cmd/Ctrl + F (`Search.vue`).
+3. Выбор понравившихся характеристик в карточке (клик по строкам `Full/Line.vue`).
+4. Хранение расширенных данных и фотографий в Pinia для предотвращения повторных запросов.
 
-- Фильтры на странице списка (из «доп. плюсов») — отсутствуют, реализован только текстовый поиск.
-- Сохранение выбранных фильтров в URL — частично: сохраняется строка поиска (ключи `list` и `card` для разных страниц).
-- Тесты — отсутствуют.
-
-## Быстрый старт
-
-Требуется Node.js 18+ (или Bun). В репозитории есть `bun.lock`, поэтому ниже указаны оба варианта.
-
-Установка зависимостей:
-
-```bash
-# npm
-npm i
-
-# или bun
-bun install
-```
-
-Запуск разработки (http://localhost:3000):
+## Структура проекта (ключевые файлы)
 
 ```bash
-npm run dev
-# или
-bun run dev
+- app/
+  - assets/
+  - data/
+    - cars.json # локальные данные
+  - components/
+    - SearchSuggestions.vue # список подсказок/фильтров
+  - cars/
+    - List.vue # список автомобилей с фильтрацией
+    - Preview.vue # карточка превью автомобиля
+    - Search.vue # поисковая строка
+    - Full/
+      - Card.vue # страница карточки авто
+      - Line.vue # строка характеристики
+      - Section.vue # обертка секции карточки
+      - Trim.vue # рендер отдельных тримов
+  - constants/
+    - icons.ts # enum с иконками Iconify
+  - layouts/
+    - default.vue # шапка, глобальный поиск, кнопка назад/домой
+  - pages/
+    - index.vue # список
+    - car-[id].vue # карточка авто
+  - stores/
+    - carsStore.ts # данные авто, фото, тримы (persist)
+    - searchStore.ts # поиск, фильтры, подсказки (persist)
+  - composables/
+    - useCarsApi.ts # клиент для серверных API (фото/тримы)
+- server/
+  - api/
+    - getCarImg.post.ts # Wikimedia API proxy
+    - getCarMoreInfo.post.ts # CarQuery API proxy
+- types/
+  - index.d.ts
 ```
 
-Сборка и предпросмотр:
+## Как запустить
+
+> [!tip] Bun
+> Я использую Bun как менеджер пакетов, команды совместимы с остальными
+
+Требования: Node 18+, pnpm/npm/bun.
+
+Разработка (SSR):
 
 ```bash
-# SSR
-npm run build:ssr && npm run preview
-
-# SPA
-npm run build:spa && npm run preview
-
-# Статическая генерация
-npm run generate
+pnpm install
+pnpm dev
 ```
 
-Переменные окружения (используются для корректного User‑Agent при запросах к Wikimedia API):
+Сборка SSR и предпросмотр:
 
 ```bash
-API_NAME="CarCatalog"
-API_MAIL="you@example.com"
+pnpm build:ssr
+pnpm preview
 ```
 
-Можно задать через `.env` или перед командой запуска.
-
-## Где что лежит
-
-- Данные: `app/assets/data/cars.json` — локальная база авто.
-- Типы: `types/index.d.ts` — `CarInfo`.
-- Хранилища:
-  - `app/stores/carsStore.ts` — массив авто, фото и «trims»; persist: true.
-  - `app/stores/searchStore.ts` — значение поиска, синхронизация с URL.
-- Компоненты списка: `app/components/cars/`
-  - `List.vue` — вывод списка и фильтрация,
-  - `Preview.vue` — карточка в гриде,
-  - `Search.vue` — поле поиска в layout.
-- Карточка авто: `app/components/cars/Full/`
-  - `Card.vue` — страница карточки (через `pages/car-[id].vue`),
-  - `Section.vue`, `Line.vue`, `Trim.vue` — блоки UI.
-- Маршруты страниц: `app/pages/index.vue`, `app/pages/car-[id].vue`.
-- Компоузабл: `app/composables/useCarsApi.ts` — обращение к серверным эндпоинтам, кеш в Pinia.
-- Серверные эндпоинты (Nuxt server routes):
-  - `server/api/getCarMoreInfo.post.ts`
-  - `server/api/getCarImg.post.ts`
-- Конфигурация: `nuxt.config.ts` (модули, SSR/SPA, Tailwind, runtimeConfig).
-
-## Поиск и сохранение запроса
-
-- Поиск регистронезависимый, по подстроке (RegExp) в полях `make`, `model`, `year`.
-- Значение ввода синхронизируется с URL:
-  - на странице списка — параметр `?list=`
-  - на странице карточки — параметр `?card=`
-- Состояние поиска хранится в Pinia и переживает навигацию в рамках сессии (sessionStorage).
-
-## Внешние API и CORS
-
-- CarQuery: `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=...&year=...&model=...`
-- Wikimedia Commons: поиск и получение файла для фото.
-- В серверных маршрутах включена проверка CORS. Разрешённые источники:
-  - `http://localhost:3000`
-  - `https://intex.yurin.dev`
-  - `https://cloudflared.holyxey.com`
-
-При развёртывании на другом домене добавьте его в массив `origins` в файлах API.
-
-## Команды
+Сборка SPA:
 
 ```bash
-# Разработка
-npm run dev
-
-# Сборка по умолчанию
-npm run build
-
-# Отдельные сборки
-npm run build:ssr
-npm run build:spa
-
-# Предпросмотр собранного
-npm run preview
-
-# Генерация статики
-npm run generate
-
-# Форматирование
-npm run pret
+pnpm build:spa
 ```
 
-## Известные ограничения
+Форматирование кода:
 
-- Опечатка в `cars.json` у года для BMW X5 (20119). Для корректности работы CarQuery стоит заменить на `2019`.
-- Внешние API могут ограничивать частоту запросов; в таком случае фото/«trims» могут не догружаться мгновенно.
-- Persist хранилища активен в пределах одной сессии (sessionStorage).
+```bash
+pnpm pret
+```
 
 ## Автор
 

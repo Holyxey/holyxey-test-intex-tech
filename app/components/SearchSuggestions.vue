@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { Icon } from '@iconify/vue'
+  import { Icons } from '@/constants/icons'
   const searchStore = useSearchStore()
 
   function toggle(category: string, suggestion: string) {
@@ -35,7 +36,7 @@
             class="rounded-full bg-stone-300 p-2 text-stone-900"
             @pointerdown.stop.prevent="clearCategory(category[0])"
           >
-            <Icon icon="solar:trash-bin-trash-line-duotone" />
+            <Icon :icon="Icons.Trash" />
           </div>
 
           <!-- Cat title -->

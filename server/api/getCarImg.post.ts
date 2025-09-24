@@ -55,31 +55,35 @@ async function findFileName(car: CarInfo) {
 }
 
 //
-export default defineEventHandler(async (event) => {
-  const origin = getHeader(event, 'origin')
-  const body = await readBody(event)
+type Body = { car?: CarInfo }
 
-  if (!body.car) {
-    throw createError({ statusCode: 400, statusMessage: 'No car specified' })
-  }
+export default defineEventHandler(
+  async (event): Promise<string | undefined | 'Access denied' | ''> => {
+    const origin = getHeader(event, 'origin')
+    const body = (await readBody(event)) as Body
 
-  // Проверка CORS
-  if (origin && origins.includes(origin)) {
-    setResponseHeaders(event, {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    })
-  } else {
-    event.node.res.statusCode = 403
-    return 'Access denied'
-  }
-  if (event.method === 'OPTIONS') return ''
+    if (!body.car) {
+      throw createError({ statusCode: 400, statusMessage: 'No car specified' })
+    }
 
-  // Основная логика
-  const car: CarInfo = body.car
+    // Проверка CORS
+    if (origin && origins.includes(origin)) {
+      setResponseHeaders(event, {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      })
+    } else {
+      event.node.res.statusCode = 403
+      return 'Access denied'
+    }
+    if (event.method === 'OPTIONS') return ''
 
-  const photo = await getPhoto(car)
+    // Основная логика
+    const car: CarInfo = body.car!
 
-  return photo
-})
+    const photo = await getPhoto(car)
+
+    return photo
+  },
+)
