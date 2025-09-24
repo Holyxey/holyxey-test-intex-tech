@@ -38,6 +38,15 @@
     searchStore.isSuggestionsOpened = false
   }
 
+  //
+  const isAnyFilters = computed(() => {
+    const chosenFilters = Object.values(searchStore.selectedFilters).filter((v) => v.size)
+    return !!inputModel.value || !!chosenFilters.length
+  })
+  function clearAll() {
+    searchStore.clearEverything()
+  }
+
   onMounted(() => {
     addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'f' && (e.metaKey || e.ctrlKey)) {
@@ -60,28 +69,25 @@
     :for="id"
     :class="[
       'transition-all',
-      'flex items-center gap-4 bg-stone-200 p-2',
+      'flex items-center gap-4 rounded-full bg-stone-200 p-2',
       searchStore.isInputFocused ? 'shadow-xl' : '',
-      searchStore.isSuggestionsOpened && Object.keys(searchStore.searchSuggestions || {}).length
-        ? 'rounded-t-2xl'
-        : 'rounded-3xl',
     ]"
   >
     <!-- left button -->
     <div
       :class="[
         'ease-cubic transition-all duration-500',
-        'relative h-8 cursor-pointer overflow-hidden rounded-full bg-stone-100/50 text-stone-500 shadow-md',
-        inputModel ? 'w-8' : 'w-13',
+        'relative h-8 cursor-pointer overflow-hidden rounded-full shadow-md',
+        isAnyFilters ? 'w-8 bg-stone-800 text-stone-50' : 'w-13 bg-stone-100/50 text-stone-500',
       ]"
-      @click="inputModel ? (inputModel = '') : null"
+      @click.stop.prevent="clearAll"
     >
       <Icon
         width="16"
         :class="[
           'ease-cubic transition-all duration-500',
           'absolute top-1/2 -translate-y-1/2',
-          !inputModel ? 'left-2' : '-left-4',
+          !isAnyFilters ? 'left-2' : '-left-4',
         ]"
         icon="hugeicons:command"
       />
@@ -90,7 +96,7 @@
         :class="[
           'ease-cubic transition-all duration-500',
           'absolute top-1/2 -translate-y-1/2',
-          !inputModel ? 'right-2' : '-right-4',
+          !isAnyFilters ? 'right-2' : '-right-4',
         ]"
         icon="tabler:circle-letter-f-filled"
       />
@@ -101,7 +107,7 @@
         :class="[
           'ease-cubic transition-all duration-500',
           'absolute top-1/2 -translate-1/2',
-          inputModel ? 'left-1/2' : '-left-1/2',
+          isAnyFilters ? 'left-1/2' : '-left-1/2',
         ]"
         icon="solar:trash-bin-trash-line-duotone"
       />
@@ -113,7 +119,7 @@
       v-model.trim="inputModel"
       :type
       :placeholder
-      class="flex-1"
+      class="block h-full w-full flex-1 rounded-full px-4"
       @focus="inputOnFocus"
       @blur="inputOnBlur"
     />
