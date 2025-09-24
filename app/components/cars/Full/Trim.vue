@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <CarsFullSection class="flex flex-row flex-wrap gap-x-4">
+  <CarsFullSection class="flex gap-x-4">
     <div
       v-for="value in Object.entries(trim)"
       v-show="value[1]"

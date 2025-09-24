@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { Icon } from '@iconify/vue'
-
   const route = useRoute()
   const id = route.params.id
 
@@ -13,7 +11,7 @@
     }
     return null
   })
-  const { data: moreInfo, pending } = useAsyncData(`car-info-${id}`, async () => {
+  const { data: trims, pending } = useAsyncData(`car-info-${id}`, async () => {
     if (car) {
       return await useCarsApi.getTrims(car)
     }
@@ -21,14 +19,14 @@
   })
 
   const trimsEven = computed(() => {
-    if (moreInfo.value && Array.isArray(moreInfo.value) && moreInfo.value.length) {
-      return moreInfo.value.filter((_, index) => index % 2 === 0)
+    if (trims.value && Array.isArray(trims.value) && trims.value.length) {
+      return trims.value.filter((_, index) => index % 2 === 0)
     }
     return []
   })
   const trimsOdd = computed(() => {
-    if (moreInfo.value && Array.isArray(moreInfo.value) && moreInfo.value.length) {
-      return moreInfo.value.filter((_, index) => index % 2 !== 0)
+    if (trims.value && Array.isArray(trims.value) && trims.value.length) {
+      return trims.value.filter((_, index) => index % 2 !== 0)
     }
     return []
   })
@@ -43,22 +41,9 @@
     <!-- First col -->
     <TransitionGroup appear tag="div" name="page" :class="['flex h-fit flex-col gap-y-4']">
       <!-- Header -->
-      <div key="header" class="sticky top-2 z-2 flex flex-col gap-4 bg-stone-100 md:flex-row">
-        <NuxtLink
-          to="/"
-          class="flex items-center gap-4 rounded-full bg-stone-600 px-4 py-2 text-white"
-        >
-          <Icon
-            width="20"
-            :icon="pending ? 'hugeicons:loading-03' : 'solar:backspace-line-duotone'"
-            :class="[pending && 'animate-spin']"
-          />
-          <span>Назад</span>
-        </NuxtLink>
-
-        <h1 class="my-auto flex items-center gap-2 text-2xl font-bold">
-          <span>{{ car.make }}</span>
-          <span>{{ car.model }}</span>
+      <div key="header" class="z-2 flex flex-col gap-4 px-4 text-center md:flex-row">
+        <h1 class="my-auto w-full items-center gap-2 text-2xl font-bold">
+          {{ car.make }} {{ car.model }}
         </h1>
       </div>
 
@@ -69,25 +54,33 @@
         <CarsFullLine left="Model" :right="car.model" />
       </CarsFullSection>
 
+      <!-- Pick info -->
       <CarsFullSection
-        v-if="!chosenList.size && !pending"
-        key="choose-hint"
-        class="border border-dashed border-blue-500 bg-blue-200"
+        key="status-info"
+        :class="[
+          'ease-cubic transition-all',
+          'relative cursor-pointer bg-stone-200 shadow-none select-none',
+          !trims || pending ? 'min-h-15' : 'min-h-12',
+        ]"
+        @click="chosenList.size ? chosenList.clear() : null"
       >
-        <p>Нажмите на пункт ниже для выделения</p>
+        <TransitionGroup appear name="page">
+          <p v-if="pending" class="absolute top-1/2 -translate-y-1/2">Загружаю информацию</p>
+
+          <div v-else-if="!trims" class="absolute top-1/2 -translate-y-1/2">
+            <p>Дополнительная информация не найдена</p>
+            <p>Попробуйте обновить страницу</p>
+          </div>
+
+          <p v-else-if="!chosenList.size" key="true" class="absolute top-1/2 -translate-y-1/2">
+            Нажмите на пункт ниже для выделения
+          </p>
+          <p v-else key="false" class="absolute top-1/2 -translate-y-1/2">Нажмите чтобы очистить</p>
+        </TransitionGroup>
       </CarsFullSection>
 
       <!-- Trims even -->
       <CarsFullTrim v-for="(trim, key) in trimsEven" :key="`trim-even-${key}`" :trim />
-
-      <CarsFullSection v-if="pending" key="load-pending" class="bg-blue-400">
-        <p class="text-lg font-semibold">Загружаю информацию</p>
-      </CarsFullSection>
-
-      <CarsFullSection v-else-if="!moreInfo" key="load-failed" class="bg-orange-400">
-        <p class="text-lg font-semibold">Дополнительная информация не найдена</p>
-        <p class="text-lg font-semibold">Попробуйте обновить страницу</p>
-      </CarsFullSection>
     </TransitionGroup>
 
     <!-- Second col -->

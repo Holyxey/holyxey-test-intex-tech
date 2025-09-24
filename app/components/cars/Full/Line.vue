@@ -5,9 +5,10 @@
     is?: HTMLElementTagNameMap
   }>()
 
+  const searchStore = useSearchStore()
+
   const upperLeft = computed(() => {
     const woModel = props.left.replace('model_', '').replace('_', ' ')
-    // return (props.left.charAt(0).toUpperCase() + props.left.slice(1)).replace('Model_', '')
     return woModel.charAt(0).toUpperCase() + woModel.slice(1)
   })
 
@@ -20,7 +21,11 @@
     }
   }
 
-  const chosen = computed(() => list.value.has(props.left))
+  const chosen = computed(
+    () =>
+      list.value.has(props.left) || (searchStore.value && props.left.includes(searchStore.value)),
+  )
+  const chosenClasses = 'bg-blue-500 px-3 py-2 -mx-2 text-white rounded-xl shadow-xl'
 </script>
 
 <template>
@@ -28,9 +33,9 @@
     :is="props.is || 'div'"
     :class="[
       'group/line relative select-none',
-      'flex items-end gap-2 rounded-sm',
-      'ease-cubic cursor-pointer transition-all',
-      chosen ? `bg-blue-500 px-3 text-white shadow-xl` : 'hover:bg-blue-400/20 hover:px-1',
+      'flex flex-wrap items-end gap-2 rounded-sm',
+      'ease-cubic cursor-pointer transition-all duration-300',
+      chosen ? chosenClasses : 'hover:bg-blue-400/20 hover:px-1',
     ]"
     @click="toggleChoose"
   >
