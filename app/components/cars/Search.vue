@@ -11,27 +11,45 @@
 
   const id = `search-${Math.random().toString(16).slice(2)}`
   const inputModel = defineModel<string>('input', {
-    get: () => searchStore.value || '',
+    get: () => searchStore.val || '',
     set: (val) => {
-      searchStore.value = val.toLowerCase()
-      return searchStore.value
+      searchStore.val = val.toLowerCase()
+      return searchStore.val
     },
   })
+  const inputNode = useTemplateRef<HTMLInputElement>(id)
+  watch(
+    () => searchStore.isInputFocused,
+    (val) => {
+      if (val) {
+        inputNode.value?.focus()
+      } else {
+        inputNode.value?.blur()
+      }
+    },
+  )
 
-  const isFocused = ref(false)
+  function inputOnFocus() {
+    searchStore.isInputFocused = true
+    searchStore.isSuggestionsOpened = true
+  }
+  function inputOnBlur() {
+    searchStore.isInputFocused = false
+    searchStore.isSuggestionsOpened = false
+  }
 
   onMounted(() => {
     addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'f' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        const el = document.getElementById(id)
-        if (el) el.focus()
+        searchStore.isInputFocused = true
+        inputNode.value?.focus()
       }
     })
     addEventListener('keyup', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        const el = document.getElementById(id)
-        if (el) el.blur()
+        inputNode.value?.blur()
+        searchStore.isInputFocused = false
       }
     })
   })
@@ -42,11 +60,14 @@
     :for="id"
     :class="[
       'transition-all',
-      'flex items-center gap-4 rounded-full bg-stone-200 p-2',
-      isFocused ? 'shadow-xl' : '',
+      'flex items-center gap-4 bg-stone-200 p-2',
+      searchStore.isInputFocused ? 'shadow-xl' : '',
+      searchStore.isSuggestionsOpened && Object.keys(searchStore.searchSuggestions || {}).length
+        ? 'rounded-t-2xl'
+        : 'rounded-3xl',
     ]"
   >
-    <!-- left icon -->
+    <!-- left button -->
     <div
       :class="[
         'ease-cubic transition-all duration-500',
@@ -88,12 +109,13 @@
 
     <input
       :id
+      :ref="id"
       v-model.trim="inputModel"
       :type
       :placeholder
       class="flex-1"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
+      @focus="inputOnFocus"
+      @blur="inputOnBlur"
     />
   </label>
 </template>

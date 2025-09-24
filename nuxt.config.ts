@@ -30,4 +30,9 @@ export default defineNuxtConfig({
   // any
   typescript: {},
   eslint: {},
+
+  // server
+  devServer: {
+    port: Number(process.env.PORT) || 3000,
+  },
 })

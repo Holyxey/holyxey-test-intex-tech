@@ -37,64 +37,72 @@
 </script>
 
 <template>
-  <div v-if="car" :class="['grid gap-x-10 gap-y-4 md:grid-cols-2']">
-    <!-- First col -->
-    <TransitionGroup appear tag="div" name="page" :class="['flex h-fit flex-col gap-y-4']">
-      <!-- Header -->
-      <div key="header" class="z-2 flex flex-col gap-4 px-4 text-center md:flex-row">
+  <div>
+    <!-- Card Hero -->
+    <div v-if="car" class="flex flex-col gap-x-10 gap-y-4 pb-6 md:flex-row">
+      <!-- Titles & status -->
+      <CarsFullSection class="flex flex-1 flex-col gap-6 overflow-hidden">
+        <!-- Header -->
         <h1 class="my-auto w-full items-center gap-2 text-2xl font-bold">
           {{ car.make }} {{ car.model }}
         </h1>
-      </div>
 
-      <!-- Local info -->
-      <CarsFullSection key="local-info" class="font-semibold">
-        <CarsFullLine left="Year" :right="car.year" />
-        <CarsFullLine left="Make" :right="car.make" />
-        <CarsFullLine left="Model" :right="car.model" />
+        <!-- Local info -->
+        <div class="flex flex-1 flex-col gap-4 font-semibold">
+          <CarsFullLine left="Year" :right="car.year" />
+          <CarsFullLine left="Make" :right="car.make" />
+          <CarsFullLine left="Model" :right="car.model" />
+        </div>
+
+        <!-- Pick info -->
+        <div
+          v-if="!trims || pending"
+          key="status-info"
+          :class="[
+            'flex items-center',
+            'ease-cubic -m-4 p-4 text-center transition-all',
+            'relative cursor-pointer bg-blue-400 shadow-none select-none',
+            !trims || pending ? 'min-h-15' : 'min-h-12',
+          ]"
+          @click="chosenList.size ? chosenList.clear() : null"
+        >
+          <TransitionGroup appear name="page">
+            <p v-if="pending" key="pending" class="absolute top-1/2 -translate-y-1/2">
+              Загружаю информацию
+            </p>
+
+            <div v-else-if="!trims" key="error-fetch" class="absolute top-1/2 -translate-y-1/2">
+              <p>Дополнительная информация не найдена</p>
+              <p>Попробуйте обновить страницу</p>
+            </div>
+          </TransitionGroup>
+        </div>
       </CarsFullSection>
 
-      <!-- Pick info -->
-      <CarsFullSection
-        key="status-info"
-        :class="[
-          'ease-cubic transition-all',
-          'relative cursor-pointer bg-stone-200 shadow-none select-none',
-          !trims || pending ? 'min-h-15' : 'min-h-12',
-        ]"
-        @click="chosenList.size ? chosenList.clear() : null"
-      >
-        <TransitionGroup appear name="page">
-          <p v-if="pending" class="absolute top-1/2 -translate-y-1/2">Загружаю информацию</p>
-
-          <div v-else-if="!trims" class="absolute top-1/2 -translate-y-1/2">
-            <p>Дополнительная информация не найдена</p>
-            <p>Попробуйте обновить страницу</p>
-          </div>
-
-          <p v-else-if="!chosenList.size" key="true" class="absolute top-1/2 -translate-y-1/2">
-            Нажмите на пункт ниже для выделения
-          </p>
-          <p v-else key="false" class="absolute top-1/2 -translate-y-1/2">Нажмите чтобы очистить</p>
-        </TransitionGroup>
-      </CarsFullSection>
-
-      <!-- Trims even -->
-      <CarsFullTrim v-for="(trim, key) in trimsEven" :key="`trim-even-${key}`" :trim />
-    </TransitionGroup>
-
-    <!-- Second col -->
-    <TransitionGroup appear tag="div" name="page" :class="['flex h-fit flex-col gap-4']">
-      <CarsFullSection v-if="photo" key="card-photo" class="overflow-hidden p-0!">
+      <!-- Image -->
+      <CarsFullSection class="rounded-4xl bg-none shadow-none">
         <img
-          class="block aspect-[16/9] object-cover"
+          v-if="photo"
+          class="aspect-[16/9] rounded-2xl object-cover"
           :src="photo"
           :alt="`${car.make} ${car.model} ${car.year}`"
         />
       </CarsFullSection>
+    </div>
 
-      <!-- Trims odd -->
-      <CarsFullTrim v-for="(trim, key) in trimsOdd" :key="`trim-odd-${key}`" :trim />
-    </TransitionGroup>
+    <!-- Trims Cols -->
+    <div v-if="car" :class="['grid gap-x-10 gap-y-4 md:grid-cols-2']">
+      <!-- First col -->
+      <TransitionGroup appear tag="div" name="page" :class="['flex h-fit flex-col gap-y-4']">
+        <!-- Trims even -->
+        <CarsFullTrim v-for="(trim, key) in trimsEven" :key="`trim-even-${key}`" :trim />
+      </TransitionGroup>
+
+      <!-- Second col -->
+      <TransitionGroup appear tag="div" name="page" :class="['flex h-fit flex-col gap-4']">
+        <!-- Trims odd -->
+        <CarsFullTrim v-for="(trim, key) in trimsOdd" :key="`trim-odd-${key}`" :trim />
+      </TransitionGroup>
+    </div>
   </div>
 </template>

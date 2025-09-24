@@ -22,8 +22,7 @@
   }
 
   const chosen = computed(
-    () =>
-      list.value.has(props.left) || (searchStore.value && props.left.includes(searchStore.value)),
+    () => list.value.has(props.left) || (searchStore.val && props.left.includes(searchStore.val)),
   )
   const chosenClasses = 'bg-blue-500 px-3 py-2 -mx-2 text-white rounded-xl shadow-xl'
 </script>

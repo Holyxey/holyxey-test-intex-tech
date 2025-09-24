@@ -2,20 +2,30 @@
   import type { CarInfo } from '~~/types'
 
   const carsStore = useCarsStore()
+  const searchStore = useSearchStore()
   const list = computed(() => carsStore.getAll())
 
-  const searchStore = useSearchStore()
-
   const isFoundedList = computed<CarInfo[]>(() => {
-    if (!searchStore.value) return list.value
+    if (!searchStore.val) return list.value
     return list.value.filter((car) => {
       const searchableCar = { ...car }
       delete searchableCar.photo
       delete searchableCar.trims
       return Object.values(searchableCar).some((v) =>
-        new RegExp(searchStore.value!, 'ig').test(v.toString()),
+        new RegExp(searchStore.val!, 'ig').test(v.toString()),
       )
     })
+  })
+
+  onMounted(() => {
+    searchStore.searchSuggestions = {
+      'По годам': [...new Set(list.value.map((c) => c.year.toString().trim()))],
+      'По марке': [...new Set(list.value.map((c) => c.make))],
+      'По модели': [...new Set(list.value.map((c) => c.model))],
+    }
+  })
+  onUnmounted(() => {
+    searchStore.searchSuggestions = {}
   })
 </script>
 

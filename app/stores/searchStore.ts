@@ -3,28 +3,27 @@ import { defineStore } from 'pinia'
 export const useSearchStore = defineStore('SearchStore', () => {
   const store = ref(new Map<string, string>())
 
-  const value = ref<string>()
+  const val = ref<string>()
   const key = ref<string>()
+  const isInputFocused = ref(false)
 
   function setKey(k: string) {
     key.value = k.trim().toLowerCase()
   }
-
   function updateFromQuery() {
     const k = key.value?.trim().toLowerCase()
     if (k) {
       const q = useRoute().query[k]
       if (q && typeof q === 'string') {
-        value.value = q
+        val.value = q
         store.value.set(k, q)
       } else {
-        value.value = ''
+        val.value = ''
         store.value.delete(k)
       }
     }
   }
-
-  watch(value, (val) => {
+  watch(val, (val) => {
     const k = key.value?.trim().toLowerCase()
     if (k) {
       if (typeof val === 'string') {
@@ -36,5 +35,9 @@ export const useSearchStore = defineStore('SearchStore', () => {
     }
   })
 
-  return { value, setKey, updateFromQuery }
+  //
+  const searchSuggestions = ref<Record<string, string[]>>()
+  const isSuggestionsOpened = ref(false)
+
+  return { val, setKey, updateFromQuery, isInputFocused, searchSuggestions, isSuggestionsOpened }
 })
