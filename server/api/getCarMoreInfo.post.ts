@@ -7,12 +7,17 @@ const origins = [
 ]
 
 async function fetchCarInfo(car: CarInfo): Promise<CarInfo['trims'] | undefined> {
-  const url = `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${car.make}&year=${car.year}&model=${car.model}`
-  const data = await $fetch<{ Trims: { [key: string]: string }[] }>(url)
-  if (data && data.Trims && data.Trims.length > 0) {
-    return data.Trims
+  try {
+    const url = `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${car.make}&year=${car.year}&model=${car.model}`
+    const data = await $fetch<{ Trims: CarInfo['trims'] }>(url)
+    if (data && data.Trims && data.Trims.length > 0) {
+      console.info('Данные успешно загружены')
+      return data.Trims
+    }
+  } catch (error) {
+    console.error('Неудачная загрузка доп. данных', error)
+    return undefined
   }
-  return undefined
 }
 
 export default defineEventHandler(async (event) => {
@@ -37,5 +42,8 @@ export default defineEventHandler(async (event) => {
   if (event.method === 'OPTIONS') return ''
 
   // Основная логика
-  return await fetchCarInfo(body.car)
+  const car: CarInfo = body.car
+  console.log('Получаю информацию о ', car.model)
+  const carInfo = await fetchCarInfo(car)
+  return carInfo
 })

@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   telemetry: { enabled: false },
 
-  modules: ['@nuxt/eslint', '@nuxt/image', '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt'],
+  modules: ['@nuxt/eslint', '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt'],
 
   // Base config
   pages: true,

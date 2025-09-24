@@ -28,12 +28,13 @@ const useCarsApi = {
       return storedCar.trims
     }
 
-    const foundMoreInfo = await $fetch<CarInfo['trims']>('/api/getCarMoreInfo', {
+    const foundMoreInfo = await $fetch('/api/getCarMoreInfo', {
       method: 'POST',
       body: { car },
     })
 
-    if (foundMoreInfo) carsStore.saveMoreInfo(car.id, foundMoreInfo)
+    if (foundMoreInfo && typeof foundMoreInfo !== 'string')
+      carsStore.saveMoreInfo(car.id, foundMoreInfo)
     else carsStore.saveMoreInfo(car.id, undefined)
     return foundMoreInfo
   },
